@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camaras Registradas</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-shield-halved"></i> Plataforma Inteligente para la Localizacion de Vehiculos Robados</h1>
+            <p>Monitoreo Vehicular - Bogotá D.C.</p>
+        </div>
+        <button id="theme-toggle-btn" aria-label="Toggle dark/light mode">
+            <i class="fas fa-sun"></i>
+        </button>
+    </header>
+
+    <nav class="main-nav">
+        <a href="index.html"><i class="fas fa-search"></i> Consulta de Placa</a>
+        <a href="monitoring.html" class="active"><i class="fas fa-broadcast-tower"></i> Mapa de camaras</a>
+        <a href="analytics.html"><i class="fas fa-chart-line"></i> Analítica y Datos</a>
+    </nav>
+
+    <main id="monitoring-main">
+        <section id="map-section">
+            <h2><i class="fas fa-video"></i> Mapa de Cámaras de Fotodetección - Bogotá</h2>
+            <div class="map-controls">
+                <button class="control-btn active" id="show-all-cameras">
+                    <i class="fas fa-eye"></i> Mostrar Todas
+                </button>
+                <button class="control-btn" id="show-speed-cameras">
+                    <i class="fas fa-tachometer-alt"></i> Solo Velocidad
+                </button>
+                <button class="control-btn" id="show-traffic-cameras">
+                    <i class="fas fa-traffic-light"></i> Solo Semáforos
+                </button>
+                <button class="control-btn" id="locate-me">
+                    <i class="fas fa-crosshairs"></i> Mi Ubicación
+                </button>
+            </div>
+            <div id="map"></div>
+            <p id="map-status-note" class="note">
+                <i class="fas fa-info-circle"></i> 
+                Mapa cargado con ubicaciones de cámaras de fotodetección de Bogotá. 
+                Haz clic en los marcadores para ver detalles de cada cámara.
+            </p>
+        </section>
+
+        <div id="vehicle-details-wrapper">
+            <section id="vehicle-info-container">
+                <div id="vehicle-info">
+                    <h2><i class="fas fa-camera"></i> Información de la camara</h2>
+                    <div id="selected-camera-info"></div>
+                </div>
+            </section>
+    
+            <section id="alert-status-container">
+                <div id="alert-status">
+                    <h2><i class="fas fa-bell"></i> Camaras Registradas</h2>
+                    <div class="camera-info">
+                        <h4>Estadísticas del Mapa</h4>
+                        <p><strong>Total de cámaras:</strong> <span id="total-cameras">0</span></p>
+                        <p><strong>Cámaras de velocidad:</strong> <span id="speed-cameras">0</span></p>
+                        <p><strong>Cámaras de semáforo:</strong> <span id="traffic-cameras">0</span></p>
+                        <p><strong>Estado:</strong> <span class="status-active">✅ Activo</span></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>Mapa interactivo camaras de fotomulta registradas - Basados en información pública de ANSV.</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Datos de cámaras de fotodetección en Bogotá (simulados basados en ubicaciones reales)
+        const cameraData = [
+            // Cámaras de velocidad principales
+            {
+                lat: 4.701084,
+                lng: -74.102413,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av. Cr 86 con Cl 76',
+                address: 'Av. Carrera 86 # 76',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.699853,
+                lng: -74.103505,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av. Cr 86 con Cl 75A',
+                address: 'Av. Carrera 86 # 75A',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.663007,
+                lng: -74.114350,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av. Boyacá con Cl 24C',
+                address: 'Av. Boyacá # 24C',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.690389,
+                lng: -74.057030,
+                type: 'speed',
+                name: 'Cámara Velocidad - Autonorte con Cl 103',
+                address: 'Autopista Norte # 103',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.689172,
+                lng: -74.057166,
+                type: 'speed',
+                name: 'Cámara Velocidad - Autonorte con Cl 102A',
+                address: 'Autopista Norte # 102A',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.689806,
+                lng: -74.056358,
+                type: 'speed',
+                name: 'Cámara Velocidad - Autonorte con Cl 103',
+                address: 'Autopista Norte # 103',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.667886,
+                lng:  -74.072956,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av NQS con Cl 72',
+                address: 'Av NQS # 72',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.667713,
+                lng: -74.073715,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av NQS con Cl 73',
+                address: 'Av NQS # 73',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.657667,
+                lng: -74.137539,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Ciudad de Cali con Cl 15A',
+                address: 'Av Ciudad de Cali # 15A',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.685901,
+                lng: -74.057233,
+                type: 'speed',
+                name: 'Cámara Velocidad - Autonorte con Cl 97',
+                address: 'Autopista Norte # 97',
+                speedLimit: '60 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.604633,
+                lng: -74.180017,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Bosa con Cr 78F',
+                address: 'Av Bosa # Cr 78F',
+                speedLimit: '60 km/h',
+                direction: 'Occidente-Oriente'
+            },
+            {
+                lat: 4.611475,
+                lng: -74.069863,
+                type: 'speed',
+                name: 'Cámara Velocidad - Carrera 7 con Calle 26',
+                address: 'Carrera 7 # 26-00',
+                speedLimit: '60 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.687130,
+                lng: -74.056962,
+                type: 'speed',
+                name: 'Cámara Velocidad - Autopista Norte',
+                address: 'Autopista Norte # 100-00',
+                speedLimit: '80 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.664933,
+                lng: -74.094105,
+                type: 'speed',
+                name: 'Cámara Velocidad - Carrera 68',
+                address: 'Carrera 68 # 63-00',
+                speedLimit: '60 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.619299,
+                lng: -74.139117,
+                type: 'speed',
+                name: 'Cámara Velocidad - Avenida Boyacá',
+                address: 'Avenida Boyacá # 13 Sur-00',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.634217,
+                lng: -74.079372,
+                type: 'speed',
+                name: 'Cámara Velocidad - Carrera 30',
+                address: 'Carrera 30 # 45-00',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.723528,
+                lng: -74.073123,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Boyacá con Calle 131',
+                address: 'Av. Boyacá # 131',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.684485,
+                lng: -74.057969,
+                type: 'speed',
+                name: 'Cámara Velocidad - Autonorte con Calle 95',
+                address: 'Autopista Norte # 95',
+                speedLimit: '40 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.738651,
+                lng: -74.099543,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Ciudad de Cali con Calle 135A',
+                address: 'Av. Ciudad de Cali # 135A',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.614449,
+                lng: -74.165071,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av 1 de Mayo con Calle 45 Sur',
+                address: 'Av. 1 de Mayo # 45 Sur',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.711841,
+                lng: -74.113798,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Calle 80 con Carrera 102',
+                address: 'Av. Calle 80 # Cr 102',
+                speedLimit: '40 km/h',
+                direction: 'Oriente-Occidente'
+            },
+            {
+                lat: 4.675598,
+                lng: -74.103163,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Boyacá con Calle 63D',
+                address: 'Av. Boyacá # 63D',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+            {
+                lat: 4.622240,
+                lng: -74.084911,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av NQS con Calle 22A',
+                address: 'Av. NQS # Cl 22A',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.625845,
+                lng: -74.138033,
+                type: 'speed',
+                name: 'Cámara Velocidad - Av Boyacá con TV 3F',
+                address: 'Av. Boyacá # TV 3F',
+                speedLimit: '50 km/h',
+                direction: 'Sur-Norte'
+            },
+
+            // Cámaras de semáforo
+            {
+                lat: 4.594763,
+                lng: -74.078517,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Plaza de Bolívar',
+                address: 'Carrera 8 # 7-00',
+                violations: ['Semáforo en rojo', 'Giro prohibido'],
+                intersection: 'Carrera 8 con Calle 7'
+            },
+            {
+                lat: 4.669235,
+                lng: -74.053631,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Zona Rosa',
+                address: 'Carrera 13 # 85-00',
+                violations: ['Semáforo en rojo', 'Invasión carril bus'],
+                intersection: 'Carrera 13 con Calle 85'
+            },
+            {
+                lat: 4.639434,
+                lng: -74.089610,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Universidad Nacional',
+                address: 'Carrera 45 # 26-85',
+                violations: ['Semáforo en rojo', 'Giro en U prohibido'],
+                intersection: 'Carrera 45 con Calle 26'
+            },
+            {
+                lat: 4.693944,
+                lng: -74.056418,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Portal del Norte',
+                address: 'Autopista Norte # 106-00',
+                violations: ['Semáforo en rojo', 'Invasión cicloruta'],
+                intersection: 'Autopista Norte con Calle 106'
+            },
+            {
+                lat: 4.613849,
+                lng: -74.140808,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Kennedy',
+                address: 'Avenida Boyacá # 38 Sur-00',
+                violations: ['Semáforo en rojo', 'Invasión carril exclusivo'],
+                intersection: 'Avenida Boyacá con Calle 38 Sur'
+            },
+
+            // Más cámaras distribuidas por la ciudad
+            {
+                lat: 4.721405,
+                lng: -74.041626,
+                type: 'speed',
+                name: 'Cámara Velocidad - Usaquén',
+                address: 'Carrera 15 # 140-00',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.595188,
+                lng: -74.146800,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Bosa',
+                address: 'Autopista Sur # 57 Sur-00',
+                violations: ['Semáforo en rojo', 'Exceso velocidad'],
+                intersection: 'Autopista Sur con Calle 57 Sur'
+            },
+            {
+                lat: 4.693417,
+                lng: -74.033411,
+                type: 'speed',
+                name: 'Cámara Velocidad - Chapinero Alto',
+                address: 'Carrera 7 # 116-00',
+                speedLimit: '50 km/h',
+                direction: 'Norte-Sur'
+            },
+            {
+                lat: 4.687635,
+                lng: -74.129085,
+                type: 'traffic',
+                name: 'Cámara Semáforo - Fontibón',
+                address: 'Carrera 100 # 26-00',
+                violations: ['Semáforo en rojo', 'Invasión peatonal'],
+                intersection: 'Carrera 100 con Calle 26'
+            },
+            {
+                lat: 4.591597,
+                lng: -74.089297,
+                type: 'speed',
+                name: 'Cámara Velocidad - San Cristóbal',
+                address: 'Avenida Caracas # 1 Sur-00',
+                speedLimit: '60 km/h',
+                direction: 'Norte-Sur'
+            }
+        ];
+
+        // Inicializar mapa
+        let map;
+        let cameraMarkers = [];
+        let currentFilter = 'all';
+
+        function initMap() {
+            // Centrar en Bogotá
+            map = L.map('map').setView([4.6097, -74.0817], 11);
+
+            // Agregar capa de mapa
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Cargar marcadores de cámaras
+            loadCameraMarkers();
+            updateStatistics();
+        }
+
+        function loadCameraMarkers() {
+            // Limpiar marcadores existentes
+            cameraMarkers.forEach(marker => map.removeLayer(marker));
+            cameraMarkers = [];
+
+            cameraData.forEach(camera => {
+                if (currentFilter === 'all' || 
+                    (currentFilter === 'speed' && camera.type === 'speed') ||
+                    (currentFilter === 'traffic' && camera.type === 'traffic')) {
+                    
+const icon = camera.type === 'speed' 
+    ? L.divIcon({
+        html: `<div style="
+            background-color: #e74c3c;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        ">
+            <i class="fas fa-camera" style="color: white; font-size: 14px;"></i>
+        </div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        className: 'custom-div-icon'
+    })
+    : L.divIcon({
+        html: `<div style="
+            background-color: #f39c12;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        ">
+            <i class="fas fa-traffic-light" style="color: white; font-size: 14px;"></i>
+        </div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        className: 'custom-div-icon'
+    });
+
+                    const marker = L.marker([camera.lat, camera.lng], { icon })
+                        .bindPopup(createCameraPopup(camera))
+                        .addTo(map);
+
+                    marker.on('click', () => showCameraDetails(camera));
+                    cameraMarkers.push(marker);
+                }
+            });
+        }
+
+        function createCameraPopup(camera) {
+            if (camera.type === 'speed') {
+                return `
+                    <div>
+                        <h4 style="color: #e74c3c; margin-bottom: 8px;">
+                            <i class="fas fa-tachometer-alt"></i> ${camera.name}
+                        </h4>
+                        <p><strong>Dirección:</strong> ${camera.address}</p>
+                        <p><strong>Límite de velocidad:</strong> ${camera.speedLimit}</p>
+                        <p><strong>Dirección de flujo:</strong> ${camera.direction}</p>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div>
+                        <h4 style="color: #f39c12; margin-bottom: 8px;">
+                            <i class="fas fa-traffic-light"></i> ${camera.name}
+                        </h4>
+                        <p><strong>Dirección:</strong> ${camera.address}</p>
+                        <p><strong>Intersección:</strong> ${camera.intersection}</p>
+                        <p><strong>Infracciones detectadas:</strong><br>
+                        ${camera.violations.map(v => `• ${v}`).join('<br>')}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function showCameraDetails(camera) {
+            const detailsDiv = document.getElementById('selected-camera-info');
+            detailsDiv.innerHTML = `
+                <div class="camera-info">
+                    <h4>${camera.name}</h4>
+                    <p><strong>Tipo:</strong> ${camera.type === 'speed' ? 'Control de Velocidad' : 'Control de Semáforo'}</p>
+                    <p><strong>Dirección:</strong> ${camera.address}</p>
+                    ${camera.speedLimit ? `<p><strong>Límite:</strong> ${camera.speedLimit}</p>` : ''}
+                    ${camera.intersection ? `<p><strong>Intersección:</strong> ${camera.intersection}</p>` : ''}
+                </div>
+            `;
+        }
+
+        function updateStatistics() {
+            const totalCameras = cameraData.length;
+            const speedCameras = cameraData.filter(c => c.type === 'speed').length;
+            const trafficCameras = cameraData.filter(c => c.type === 'traffic').length;
+
+            document.getElementById('total-cameras').textContent = totalCameras;
+            document.getElementById('speed-cameras').textContent = speedCameras;
+            document.getElementById('traffic-cameras').textContent = trafficCameras;
+        }
+
+        // Event listeners para controles
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+
+            document.getElementById('show-all-cameras').addEventListener('click', function() {
+                currentFilter = 'all';
+                
+                updateActiveButton(this);
+                loadCameraMarkers();
+            });
+
+            document.getElementById('show-speed-cameras').addEventListener('click', function() {
+                currentFilter = 'speed';
+                updateActiveButton(this);
+                loadCameraMarkers();
+            });
+
+            document.getElementById('show-traffic-cameras').addEventListener('click', function() {
+                currentFilter = 'traffic';
+                updateActiveButton(this);
+                loadCameraMarkers();
+            });
+
+            document.getElementById('locate-me').addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        map.setView([lat, lng], 15);
+                        
+                        L.marker([lat, lng])
+                            .bindPopup('Tu ubicación actual')
+                            .addTo(map)
+                            .openPopup();
+                    });
+                } else {
+                    alert('La geolocalización no está disponible en tu navegador.');
+                }
+            });
+        });
+
+        function updateActiveButton(activeButton) {
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeButton.classList.add('active');
+        }
+    </script>
+    <script src="theme-toggle.js"></script>
+</body>
+</html>

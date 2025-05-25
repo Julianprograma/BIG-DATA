@@ -1,0 +1,830 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-bg: #181028; /* Deep dark purple */
+    --secondary-bg: #2a1a4e; /* Dark purple */
+    --tertiary-bg: #35225d; /* Medium-dark purple for sections */
+    --accent-bg: #482c68; /* Slightly lighter purple for inputs/popups */
+    --text-primary: #e8e0f8; /* Light lavender for primary text */
+    --text-secondary: #c0b0ff; /* Brighter lavender/light purple */
+    --accent-color: #9d4edd; /* Vibrant purple */
+    --accent-color-highlight: #c77dff; /* Brighter highlight purple */
+    --accent-color-darker: #7b2cbf; /* Darker purple for buttons, active states */
+    --border-color: #503570; /* Purple border */
+    --border-light: #6a4a8a; /* Lighter purple for input borders */
+    --success-color: #44ff44; /* Keep green for universal success */
+    --danger-color: #ff4444; /* Keep red for universal danger */
+    --shadow-color: rgba(157, 78, 221, 0.25); /* Translucent vibrant purple shadow, slightly more visible */
+    --header-bg-image: linear-gradient(rgba(24, 16, 40, 0.88), rgba(24, 16, 40, 0.99)), url('/header-background.png'); /* Darker purple gradient */
+}
+
+body.light-mode {
+    --primary-bg: #f8f5fa; /* Very light lavender/off-white */
+    --secondary-bg: #ffffff; /* White */
+    --tertiary-bg: #f0edf5; /* Light lavender gray for sections */
+    --accent-bg: #e9e4ef;  /* Light input background */
+    --text-primary: #3d2c58; /* Dark purple text */
+    --text-secondary: #5e4580; /* Medium purple text */
+    --accent-color: #7b2cbf; /* Main purple accent (consistent with dark mode button) */
+    --accent-color-highlight: #9d4edd; /* Brighter purple highlight */
+    --accent-color-darker: #5a189a; /* Darker purple for buttons/active states */
+    --border-color: #d4cdda; /* Light purple border */
+    --border-light: #c0b6cc; /* Lighter purple input border */
+    --success-color: #28a745; /* Standard green for success */
+    --danger-color: #dc3545; /* Standard red for danger */
+    --shadow-color: rgba(123, 44, 191, 0.15); /* Lighter purple shadow */
+    --header-bg-image: linear-gradient(rgba(232, 224, 240, 0.85), rgba(232, 224, 240, 0.98)), url('/header-background.png'); /* Light purple gradient */
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background-color: var(--primary-bg); 
+    color: var(--text-primary);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header {
+    background-image: var(--header-bg-image); 
+    background-size: cover;
+    background-position: center;
+    color: #fff; /* Default for dark mode, overridden for light */
+    padding: 1.5rem 1rem; 
+    text-align: center;
+    border-bottom: 3px solid var(--accent-color);
+    position: relative; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+body.light-mode header {
+    color: var(--text-primary); /* Dark purple text for light header */
+    text-shadow: none;
+}
+body.light-mode header h1 i {
+    color: var(--accent-color); /* Main purple accent for icon */
+    text-shadow: none;
+}
+body.light-mode header p {
+    color: var(--text-secondary); /* Medium purple for subtitle */
+}
+
+.header-content {
+    text-align: center;
+    flex-grow: 1; 
+}
+
+#theme-toggle-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    position: absolute; 
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#theme-toggle-btn:hover {
+    background: var(--accent-color);
+    color: var(--primary-bg); /* Text color that contrasts with accent */
+}
+.custom-div-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.custom-div-icon div {
+    transition: all 0.2s ease;
+}
+
+.custom-div-icon div:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
+}
+body.light-mode #theme-toggle-btn {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--accent-color-darker);
+    color: var(--accent-color-darker);
+}
+body.light-mode #theme-toggle-btn:hover {
+    background: var(--accent-color-darker);
+    color: var(--secondary-bg);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem; 
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+header h1 i {
+    margin-right: 10px;
+    color: var(--accent-color);
+    text-shadow: 0 0 8px var(--accent-color); /* Adjusted shadow to match new accent */
+}
+
+header p {
+    margin-top: 0.2rem;
+    font-size: 0.9rem; 
+    color: var(--text-secondary); /* Adjusted to use text-secondary directly */
+}
+body.light-mode header p {
+    color: var(--text-secondary); /* Already set correctly above, but ensures consistency */
+}
+
+.main-nav {
+    background-color: var(--secondary-bg);
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.main-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin: 0 10px; 
+    padding: 10px 15px; /* Increased padding */
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease, border-bottom-color 0.3s ease;
+    font-size: 0.95rem; 
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    border-bottom: 3px solid transparent; /* For active state transition */
+}
+
+.main-nav a i {
+    font-size: 1.1em;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Hover state - Dark Mode (default) */
+.main-nav a:hover {
+    background-color: var(--accent-bg); 
+    color: var(--accent-color-highlight); 
+}
+
+/* Active state - Dark Mode (default) */
+.main-nav a.active {
+    background-color: var(--accent-color-darker); 
+    color: var(--accent-color-highlight); 
+    font-weight: bold;
+    border-bottom-color: var(--accent-color); 
+}
+
+/* Hover state - Light Mode */
+body.light-mode .main-nav a:hover {
+    background-color: var(--accent-bg); 
+    color: var(--accent-color-darker);
+}
+
+/* Active state - Light Mode */
+body.light-mode .main-nav a.active {
+    background-color: var(--accent-color); 
+    color: var(--secondary-bg); 
+    font-weight: bold;
+    border-bottom-color: var(--accent-color-darker); 
+}
+
+.main-nav a.active i {
+    opacity: 1;
+    transform: scale(1.15); /* Make icon slightly larger and more prominent */
+}
+
+main {
+    flex-grow: 1;
+    max-width: 1100px;
+    width: 95%; 
+    margin: 20px auto;
+    padding: 25px; /* Increased padding */
+    background-color: var(--secondary-bg);
+    box-shadow: 0 0 20px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Increased gap */
+    border-radius: 8px;
+}
+
+section {
+    border: 1px solid var(--border-color);
+    padding: 25px; /* Increased padding */
+    border-radius: 6px;
+    background-color: var(--tertiary-bg);
+    transition: box-shadow 0.3s ease;
+}
+section:hover {
+     box-shadow: 0 0 15px var(--shadow-color);
+}
+
+section h2 {
+    margin-top: 0;
+    color: var(--accent-color);
+    border-bottom: 2px solid var(--accent-color);
+    padding-bottom: 12px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    text-shadow: 0 0 5px var(--accent-color); /* Shadow for accent color */
+    display: flex;
+    align-items: center;
+}
+body.light-mode section h2 {
+    text-shadow: none;
+}
+
+section h2 i {
+    margin-right: 12px;
+    font-size: 1.2em;
+    min-width: 25px;
+    text-align: center;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+section:hover h2 i {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+#input-section label, #image-input-section label {
+    display: block;
+    margin-bottom: 10px; /* Increased margin */
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+#input-section input[type="text"], #image-input-section input[type="file"] {
+    width: calc(100% - 32px); /* Adjusted for new padding */
+    padding: 14px; /* Increased padding */
+    margin-bottom: 20px; /* Increased margin */
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background-color: var(--accent-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+#image-input-section input[type="file"] {
+    padding: 12px 14px; /* Adjusted padding for file input consistency */
+}
+
+#input-section input[type="text"]:focus, #image-input-section input[type="file"]:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color); /* Shadow for accent color */
+    outline: none;
+}
+
+#input-section button, 
+#image-input-section button,
+#camera-controls button,
+#submission-section button { 
+    background-color: var(--accent-color-darker);
+    color: #ffffff; 
+    padding: 14px 30px; 
+    border: 1px solid var(--accent-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px; 
+    margin-top: 10px; 
+}
+body.light-mode #input-section button, 
+body.light-mode #image-input-section button,
+body.light-mode #camera-controls button,
+body.light-mode #submission-section button { 
+    background-color: var(--accent-color);
+    color: var(--secondary-bg); 
+    border: 1px solid var(--accent-color-darker);
+}
+
+#input-section button i, 
+#image-input-section button i,
+#camera-controls button i,
+#submission-section button i { 
+    font-size: 1.1em;
+    transition: transform 0.3s ease;
+}
+
+#input-section button:hover, 
+#image-input-section button:hover,
+#camera-controls button:hover,
+#submission-section button:hover { 
+    background-color: var(--accent-color);
+    color: var(--primary-bg); /* Text color contrasting with accent */
+    box-shadow: 0 0 15px var(--accent-color); /* Shadow for accent color */
+    transform: translateY(-2px);
+}
+body.light-mode #input-section button:hover, 
+body.light-mode #image-input-section button:hover,
+body.light-mode #camera-controls button:hover,
+body.light-mode #submission-section button:hover { 
+    background-color: var(--accent-color-darker);
+    color: var(--secondary-bg);
+    box-shadow: 0 0 15px var(--accent-color-darker); /* Shadow for darker accent */
+}
+
+#input-section button:active, 
+#image-input-section button:active,
+#camera-controls button:active,
+#submission-section button:active { 
+    transform: translateY(0);
+    box-shadow: 0 0 8px var(--accent-color); /* Shadow for accent color */
+}
+
+#camera-container {
+    width: 100%;
+    max-width: 480px; 
+    margin: 0 auto 15px auto;
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    background-color: var(--accent-bg);
+    min-height: 200px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    position: relative; 
+}
+
+#camera-stream {
+    width: 100%;
+    height: auto; 
+    display: block; 
+    border-radius: 3px; 
+}
+
+#camera-placeholder {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#camera-placeholder i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+}
+body.light-mode #camera-placeholder i {
+    color: var(--accent-color-darker);
+}
+
+#camera-controls {
+    text-align: center;
+    margin-bottom: 15px;
+}
+#camera-controls button {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.note {
+    font-size: 0.9em;
+    color: var(--text-secondary); 
+    margin-top: 15px;
+    background-color: rgba(var(--accent-color-rgb, 72, 44, 104), 0.2); /* Using accent-bg as base for note */
+    padding: 10px; 
+    border-radius: 4px;
+    border-left: 3px solid var(--accent-color); 
+}
+body.light-mode .note {
+    background-color: rgba(var(--accent-color-rgb-lm, 123, 44, 191), 0.08); /* Using accent-color for light mode note */
+    color: var(--accent-color-darker);
+    border-left-color: var(--accent-color-darker);
+}
+
+#vehicle-details-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 25px; 
+}
+
+#vehicle-info, #alert-status {
+    background-color: var(--accent-bg);
+    padding: 25px; 
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+#vehicle-info p i,
+#alert-status p i {
+    margin-right: 8px;
+    color: var(--accent-color);
+    width: 16px;
+    text-align: center;
+}
+
+#alert-status .alert-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+    filter: brightness(1.5); 
+}
+body.light-mode #alert-status .alert-icon {
+    filter: brightness(1); 
+}
+
+#alert-status.stolen {
+    background-color: rgba(255, 68, 68, 0.15); /* danger-color with alpha */
+    color: #ffbebe; 
+    border: 1px solid var(--danger-color);
+    box-shadow: 0 0 10px var(--danger-color); 
+}
+body.light-mode #alert-status.stolen {
+    background-color: rgba(220, 53, 69, 0.1); 
+    color: var(--danger-color); 
+}
+
+#alert-status.stolen h2 {
+    color: var(--danger-color);
+    text-shadow: 0 0 5px var(--danger-color); 
+}
+body.light-mode #alert-status.stolen h2 {
+    text-shadow: none;
+}
+
+#alert-status.stolen h2 i,
+#alert-status.stolen p i {
+    color: var(--danger-color);
+}
+
+#alert-status.stolen .alert-icon {
+    filter: hue-rotate(0deg) brightness(1.5) saturate(2); 
+}
+body.light-mode #alert-status.stolen .alert-icon {
+     filter: hue-rotate(0deg) brightness(1) saturate(1.5);
+}
+
+.simulated-sms {
+    font-style: italic;
+    color: var(--text-secondary); 
+    margin-top: 10px;
+    font-size: 0.9em;
+    padding: 8px; 
+    background-color: rgba(var(--primary-bg-rgb, 24, 16, 40), 0.5); /* Darker, related to primary bg */
+    border-radius: 3px;
+}
+body.light-mode .simulated-sms {
+    background-color: rgba(var(--accent-bg-rgb-lm, 233, 228, 239), 0.7); /* Lighter, related to accent bg */
+    color: #555;
+}
+
+#alert-status.clear {
+    background-color: rgba(68, 255, 68, 0.1); /* success-color with alpha */
+    color: #b2ffb7; 
+    border: 1px solid var(--success-color);
+    box-shadow: 0 0 10px var(--success-color); 
+}
+body.light-mode #alert-status.clear {
+    background-color: rgba(40, 167, 69, 0.1); 
+    color: var(--success-color); 
+}
+
+#alert-status.clear h2 {
+    color: var(--success-color);
+    text-shadow: 0 0 5px var(--success-color); 
+}
+body.light-mode #alert-status.clear h2 {
+    text-shadow: none;
+}
+
+#alert-status.clear h2 i,
+#alert-status.clear p i {
+    color: var(--success-color);
+}
+
+#map {
+    height: 400px;
+    width: 100%;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+body.light-mode #map {
+    filter: grayscale(0%) brightness(100%) contrast(100%); 
+}
+
+.map-controls {
+    display: flex;
+    gap: 0.5rem; 
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    padding: 0.5rem;
+    background-color: var(--accent-bg); 
+    border-radius: 4px;
+}
+
+.map-controls .control-btn {
+    background-color: var(--tertiary-bg); 
+    color: var(--text-secondary); 
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem; 
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem; 
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+body.light-mode .map-controls .control-btn {
+    background-color: var(--secondary-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+.map-controls .control-btn:hover {
+    background-color: var(--accent-color-darker); 
+    color: var(--accent-color-highlight); 
+    border-color: var(--accent-color);
+    transform: translateY(-1px);
+}
+body.light-mode .map-controls .control-btn:hover {
+    background-color: var(--accent-color);
+    color: var(--secondary-bg);
+    border-color: var(--accent-color-darker);
+}
+
+.map-controls .control-btn.active {
+    background-color: var(--accent-color); 
+    color: var(--secondary-bg); 
+    border-color: var(--accent-color-highlight);
+    font-weight: bold;
+}
+body.light-mode .map-controls .control-btn.active {
+    background-color: var(--accent-color-darker);
+    color: var(--secondary-bg);
+    border-color: var(--accent-color);
+}
+
+.map-controls .control-btn i {
+    font-size: 1em;
+}
+
+.camera-info {
+    background: var(--accent-bg);
+    border-left: 4px solid var(--accent-color);
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+body.light-mode .camera-info {
+    background: var(--tertiary-bg);
+    border-left-color: var(--accent-color-darker);
+}
+
+.camera-info h4 {
+    color: var(--accent-color-highlight);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+body.light-mode .camera-info h4 {
+    color: var(--accent-color-darker);
+}
+
+.camera-info p {
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+}
+body.light-mode .camera-info p {
+    color: var(--text-primary);
+}
+.camera-info p strong {
+    color: var(--text-secondary);
+}
+body.light-mode .camera-info p strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.status-active {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+.placeholder-box {
+    border: 2px dashed var(--accent-color);
+    padding: 25px; 
+    text-align: center;
+    color: var(--text-secondary);
+    background-color: rgba(var(--accent-bg-rgb, 72, 44, 104), 0.3); 
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    font-style: italic;
+}
+body.light-mode .placeholder-box {
+    background-color: rgba(var(--accent-color-rgb-lm, 123, 44, 191), 0.05); 
+    border-color: var(--accent-color-darker);
+}
+
+.powerbi-placeholder {
+    padding: 0; 
+    min-height: 380px; 
+    background-color: transparent; 
+    border: 1px solid var(--border-color); 
+    overflow: hidden; 
+    display: block; 
+}
+
+.powerbi-placeholder iframe {
+    width: 100%;
+    height: 70vh; 
+    min-height: 500px; 
+    display: block;
+    border: none; 
+}
+
+.powerbi-placeholder img {
+    max-width: 80%;
+    max-height: 150px;
+    margin-bottom: 15px;
+    opacity: 0.7;
+    filter: drop-shadow(0 0 10px var(--shadow-color));
+}
+body.light-mode .powerbi-placeholder img {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.1));
+}
+
+.future-text-placeholder {
+    background-color: var(--tertiary-bg);
+    padding: 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 25px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.future-text-placeholder h2 {
+    margin-top: 0;
+    color: var(--accent-color-highlight);
+    border-bottom: 1px solid var(--accent-color);
+    padding-bottom: 10px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+}
+.future-text-placeholder h2 i {
+    margin-right: 10px;
+    font-size: 1.1em;
+}
+.future-text-placeholder p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+}
+.future-text-placeholder p:last-of-type {
+    margin-bottom: 0;
+}
+body.light-mode .future-text-placeholder {
+    background-color: #f9f7fc; 
+    border-color: var(--border-light);
+}
+body.light-mode .future-text-placeholder h2 {
+    color: var(--accent-color-darker);
+    border-bottom-color: var(--accent-color-darker);
+}
+body.light-mode .future-text-placeholder p {
+    color: var(--text-primary);
+}
+
+footer {
+    text-align: center;
+    margin-top: auto;
+    padding: 15px;
+    background-color: var(--primary-bg); 
+    color: #aaa; 
+    font-size: 0.9em;
+    border-top: 1px solid var(--border-light);
+}
+body.light-mode footer {
+    background-color: var(--tertiary-bg);
+    color: #555;
+    border-top: 1px solid var(--border-color);
+}
+
+.leaflet-popup-content-wrapper {
+    background: var(--accent-bg);
+    color: var(--text-primary);
+    border-radius: 6px;
+    box-shadow: 0 3px 14px var(--shadow-color);
+}
+.leaflet-popup-content {
+    font-family: 'Roboto', sans-serif;
+}
+.leaflet-popup-tip {
+     background: var(--accent-bg);
+}
+.leaflet-popup-close-button {
+    color: var(--text-primary) !important;
+}
+.leaflet-popup-close-button:hover {
+    color: var(--accent-color) !important;
+}
+
+#image-capture-status {
+    background-color: rgba(44, 172, 44, 0.2); 
+    border-left: 3px solid var(--success-color);
+    color: var(--text-primary); 
+    font-weight: bold;
+}
+body.light-mode #image-capture-status {
+    background-color: rgba(40, 167, 69, 0.15);
+    border-left-color: var(--success-color);
+    color: var(--success-color);
+}
+
+#submission-section {
+    text-align: center; 
+    margin-top: 20px; 
+    padding: 20px;
+    background-color: var(--secondary-bg); 
+    border-top: 1px solid var(--border-color); 
+}
+
+#submission-section button {
+    padding: 15px 40px; 
+    font-size: 1.1rem;
+}
+
+@media (min-width: 768px) {
+    header {
+        padding: 2rem; 
+    }
+    header h1 {
+        font-size: 2rem;
+    }
+    header p {
+        font-size: 1rem;
+    }
+    .main-nav a {
+        margin: 0 15px;
+        font-size: 1rem;
+        padding: 12px 18px; 
+    }
+    main {
+        padding: 30px;
+        gap: 35px; 
+    }
+
+    main#monitoring-main {
+        display: grid;
+        grid-template-columns: 1fr; 
+        grid-template-areas:
+            "map"
+            "details";
+    }
+    main#monitoring-main #map-section { grid-area: map; }
+    main#monitoring-main #vehicle-details-wrapper { grid-area: details; display: grid; grid-template-columns: 1fr; gap: 25px;} 
+
+    main#analytics-main {
+         display: flex; 
+         flex-direction: column; 
+         gap: 35px; 
+    }
+    
+    #map {
+        height: 450px;
+    }
+}
+
+@media (min-width: 1024px) {
+     main {
+        max-width: 1200px;
+     }
+
+    main#monitoring-main { 
+        grid-template-columns: 1fr; 
+    }
+    
+    #map {
+        height: 500px;
+    }
+    .powerbi-placeholder img {
+         max-height: 200px;
+    }
+}
