@@ -110,5 +110,38 @@
 
     <script src="script.js"></script>
     <script src="theme-toggle.js"></script>
+
+    <script>
+document.getElementById('start-camera-btn').addEventListener('click', async function() {
+    const video = document.getElementById('camera-stream');
+    video.style.display = 'block';
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    document.getElementById('capture-image-btn').style.display = 'inline-block';
+});
+
+document.getElementById('capture-image-btn').addEventListener('click', function() {
+    const video = document.getElementById('camera-stream');
+    const canvas = document.getElementById('image-capture-canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.toBlob(function(blob) {
+        const formData = new FormData();
+        formData.append('image', blob, 'captura.jpg');
+        fetch('https://ciudades-inteligentes-vehiculos-robados.vercel.app/procesar_imagen', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Respuesta del backend: ' + data.mensaje);
+        })
+        .catch(error => {
+            alert('Error al enviar la imagen: ' + error);
+        });
+    }, 'image/jpeg');
+});
+</script>
 </body>
 </html>
