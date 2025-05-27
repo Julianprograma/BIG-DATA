@@ -3,6 +3,10 @@ import subprocess
 import os
 
 app = Flask(__name__)
+# filepath: c:\Users\pipem\OneDrive\Documentos\Trabajos 2025\Universidad\BIG DATA\app.py
+from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
 
 @app.route('/procesar_imagen', methods=['POST'])
 def procesar_imagen():
