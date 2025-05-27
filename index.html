@@ -40,9 +40,12 @@
                     <p>Presione "Activar Cámara" para iniciar la captura.</p>
                 </div>
             </div>
+            <!-- Agrega este bloque dentro de tu sección de controles de cámara -->
             <div id="camera-controls">
                 <button id="start-camera-btn"><i class="fas fa-video"></i> Activar Cámara</button>
                 <button id="capture-image-btn" style="display:none;"><i class="fas fa-camera"></i> Capturar Foto</button>
+                <input type="file" id="upload-image-input" accept="image/*" style="display:none;">
+                <button id="upload-image-btn"><i class="fas fa-upload"></i> Cargar Imagen</button>
             </div>
             <p id="image-capture-status" class="note" style="display: none;"></p>
         </section>
@@ -142,6 +145,31 @@ document.getElementById('capture-image-btn').addEventListener('click', function(
         });
     }, 'image/jpeg');
 });
+
+
+// Botón para cargar imagen desde el dispositivo
+document.getElementById('upload-image-btn').addEventListener('click', function() {
+    document.getElementById('upload-image-input').click();
+});
+
+document.getElementById('upload-image-input').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('image', file, file.name);
+    fetch('https://ciudades-inteligentes-vehiculos-robados.vercel.app/procesar_imagen', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Respuesta del backend: ' + data.mensaje);
+    })
+    .catch(error => {
+        alert('Error al enviar la imagen: ' + error);
+    });
+});
+
 </script>
 </body>
 </html>
