@@ -828,3 +828,157 @@ body.light-mode #image-capture-status {
          max-height: 200px;
     }
 }
+
+        /* Contenedor principal del chatbot flotante */
+        .chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Botón para abrir/cerrar el chat */
+        .chat-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: white;
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Iconos del botón */
+        .chat-icon, .close-icon {
+            transition: all 0.3s ease;
+            position: absolute;
+        }
+
+        .close-icon {
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        .chatbot-container.open .chat-icon {
+            opacity: 0;
+            transform: rotate(-180deg);
+        }
+
+        .chatbot-container.open .close-icon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        /* Ventana del chat */
+        .chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: hidden;
+        }
+
+        .chatbot-container.open .chat-window {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Header del chat */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Iframe del chatbot */
+        .chat-iframe {
+            width: 100%;
+            height: calc(100% - 60px);
+            border: none;
+            border-radius: 0 0 15px 15px;
+        }
+
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            .chat-window {
+                width: 300px;
+                height: 450px;
+                right: -10px;
+            }
+            
+            .chatbot-container {
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100vw - 40px);
+                height: 70vh;
+                right: -15px;
+            }
+        }
+
+        /* Animación de entrada suave */
+        .chatbot-container {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }

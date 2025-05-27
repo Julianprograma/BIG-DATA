@@ -48,7 +48,59 @@
         </section>
 
         <section id="submission-section">
+            <button><i class="fas fa-check-double"></i> Completar Consulta</button>
         </section>
+         <!-- Chatbot flotante -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <!-- Botón para abrir/cerrar -->
+        <button class="chat-toggle" id="chatToggle">
+            <span class="chat-icon">💬</span>
+            <span class="close-icon">✕</span>
+        </button>
+        
+        <!-- Ventana del chat -->
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3>Asistente Virtual</h3>
+                <div class="status-indicator"></div>
+            </div>
+            <iframe 
+                class="chat-iframe"
+                src="https://embed.chatnode.ai/ef363c50-ca53-4528-889e-1acb5a1f4b7a" 
+                allow="autoplay; clipboard-read; clipboard-write">
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad del chatbot
+        const chatContainer = document.getElementById('chatbotContainer');
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWindow = document.getElementById('chatWindow');
+
+        chatToggle.addEventListener('click', function() {
+            chatContainer.classList.toggle('open');
+        });
+
+        // Cerrar el chat si se hace clic fuera de él
+        document.addEventListener('click', function(event) {
+            if (!chatContainer.contains(event.target)) {
+                chatContainer.classList.remove('open');
+            }
+        });
+
+        // Prevenir que el clic dentro del chat lo cierre
+        chatContainer.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Opcional: Cerrar con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                chatContainer.classList.remove('open');
+            }
+        });
+    </script>
 
     </main>
 
