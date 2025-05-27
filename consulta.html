@@ -1,0 +1,176 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/ios-filled/32/ffffff/camera.png">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1><i class="fas fa-shield-halved"></i> Plataforma Inteligente para la Localizacion de Vehiculos Robados</h1>
+            <p>Consulta de Estado - Bogotá D.C.</p>
+        </div>
+        <button id="theme-toggle-btn" aria-label="Toggle dark/light mode">
+            <i class="fas fa-sun"></i>
+        </button>
+    </header>
+
+    <nav class="main-nav">
+        <a href="index.html" class="active"><i class="fas fa-search"></i> Consulta de Placa</a>
+        <a href="monitoring.html"><i class="fas fa-broadcast-tower"></i> Mapa de Camaras</a>
+        <a href="analytics.html"><i class="fas fa-chart-line"></i> Analítica y Datos</a>
+    </nav>
+
+    <main>
+        <section id="input-section">
+            <h2><i class="fas fa-camera"></i> Ingresar ID de Cámara</h2>
+            <label for="camera-id-input">ID de Cámara:</label>
+            <input type="text" id="camera-id-input" placeholder="001" autofocus>
+       </section>
+
+        <section id="image-input-section">
+            <h2><i class="fas fa-camera-retro"></i> Capturar Foto desde Cámara</h2>
+            <div id="camera-container">
+                <video id="camera-stream" autoplay playsinline muted style="display:none;"></video>
+                <canvas id="image-capture-canvas" style="display:none;"></canvas>
+                <div id="camera-placeholder">
+                    <p><i class="fas fa-video-slash"></i> Cámara no activada.</p>
+                    <p>Presione "Activar Cámara" para iniciar la captura.</p>
+                </div>
+            </div>
+            <!-- Agrega este bloque dentro de tu sección de controles de cámara -->
+            <div id="camera-controls">
+                <button id="start-camera-btn"><i class="fas fa-video"></i> Activar Cámara</button>
+                <button id="capture-image-btn" style="display:none;"><i class="fas fa-camera"></i> Capturar Foto</button>
+                <input type="file" id="upload-image-input" accept="image/*" style="display:none;">
+                <button id="upload-image-btn"><i class="fas fa-upload"></i> Cargar Imagen</button>
+            </div>
+            <p id="image-capture-status" class="note" style="display: none;"></p>
+        </section>
+
+        <section id="submission-section">
+            <button><i class="fas fa-check-double"></i> Completar Consulta</button>
+        </section>
+         <!-- Chatbot flotante -->
+    <div class="chatbot-container" id="chatbotContainer">
+        <!-- Botón para abrir/cerrar -->
+        <button class="chat-toggle" id="chatToggle">
+            <span class="chat-icon">💬</span>
+            <span class="close-icon">✕</span>
+        </button>
+        
+        <!-- Ventana del chat -->
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h3>Asistente Virtual</h3>
+                <div class="status-indicator"></div>
+            </div>
+            <iframe 
+                class="chat-iframe"
+                src="https://embed.chatnode.ai/ef363c50-ca53-4528-889e-1acb5a1f4b7a" 
+                allow="autoplay; clipboard-read; clipboard-write">
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad del chatbot
+        const chatContainer = document.getElementById('chatbotContainer');
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWindow = document.getElementById('chatWindow');
+
+        chatToggle.addEventListener('click', function() {
+            chatContainer.classList.toggle('open');
+        });
+
+        // Cerrar el chat si se hace clic fuera de él
+        document.addEventListener('click', function(event) {
+            if (!chatContainer.contains(event.target)) {
+                chatContainer.classList.remove('open');
+            }
+        });
+
+        // Prevenir que el clic dentro del chat lo cierre
+        chatContainer.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+        // Opcional: Cerrar con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                chatContainer.classList.remove('open');
+            }
+        });
+    </script>
+
+    </main>
+
+    <footer>
+        <p>Envio de formulario para consulta de la placa</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="theme-toggle.js"></script>
+
+    <script>
+document.getElementById('start-camera-btn').addEventListener('click', async function() {
+    const video = document.getElementById('camera-stream');
+    video.style.display = 'block';
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    document.getElementById('capture-image-btn').style.display = 'inline-block';
+});
+
+document.getElementById('capture-image-btn').addEventListener('click', function() {
+    const video = document.getElementById('camera-stream');
+    const canvas = document.getElementById('image-capture-canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    canvas.toBlob(function(blob) {
+        const formData = new FormData();
+        formData.append('image', blob, 'captura.jpg');
+        fetch('http://127.0.0.1:5000/procesar_imagen', {
+        method: 'POST',
+        body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Respuesta del backend: ' + data.mensaje);
+        })
+        .catch(error => {
+            alert('Error al enviar la imagen: ' + error);
+        });
+    }, 'image/jpeg');
+});
+
+
+// Botón para cargar imagen desde el dispositivo
+document.getElementById('upload-image-btn').addEventListener('click', function() {
+    document.getElementById('upload-image-input').click();
+});
+
+document.getElementById('upload-image-input').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('image', file, file.name);
+    fetch('http://127.0.0.1:5000/procesar_imagen', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Respuesta del backend: ' + data.mensaje);
+    })
+    .catch(error => {
+        alert('Error al enviar la imagen: ' + error);
+    });
+});
+
+</script>
+</body>
+</html>
