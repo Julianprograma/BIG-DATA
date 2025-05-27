@@ -132,9 +132,9 @@ document.getElementById('capture-image-btn').addEventListener('click', function(
     canvas.toBlob(function(blob) {
         const formData = new FormData();
         formData.append('image', blob, 'captura.jpg');
-        fetch('https://ciudades-inteligentes-vehiculos-robados.vercel.app/procesar_imagen', {
-            method: 'POST',
-            body: formData
+        fetch('http://127.0.0.1:5000/procesar_imagen', {
+        method: 'POST',
+        body: formData
         })
         .then(response => response.json())
         .then(data => {
@@ -157,7 +157,7 @@ document.getElementById('upload-image-input').addEventListener('change', functio
     if (!file) return;
     const formData = new FormData();
     formData.append('image', file, file.name);
-    fetch('https://ciudades-inteligentes-vehiculos-robados.vercel.app/procesar_imagen', {
+    fetch('http://127.0.0.1:5000/procesar_imagen', {
         method: 'POST',
         body: formData
     })
