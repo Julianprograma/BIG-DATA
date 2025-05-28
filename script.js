@@ -17,13 +17,6 @@ let capturedImageData = null; // To store the captured image data URL
 // --- Simulation Logic ---
 
 // Simulated mapping of Camera IDs to plates they might detect
-const cameraPlateMap = {
-    "CAM001": "XYZ-789", // Example: Normal vehicle
-    "CAM002": "ABC-123", // Example: Stolen vehicle
-    "CAM003": "QRS-456", // Example: Another normal vehicle
-    "DEFAULT": "XYZ-789" // Default plate if ID not found, for demo
-};
-
 async function startCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert("Tu navegador no soporta el acceso a la cámara.");
