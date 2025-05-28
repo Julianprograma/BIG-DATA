@@ -116,6 +116,9 @@
     <script src="theme-toggle.js"></script>
 
     <script>
+let ultimaImagenBlob = null;
+
+// Activar cámara
 document.getElementById('start-camera-btn').addEventListener('click', async function() {
     const video = document.getElementById('camera-stream');
     video.style.display = 'block';
@@ -124,6 +127,7 @@ document.getElementById('start-camera-btn').addEventListener('click', async func
     document.getElementById('capture-image-btn').style.display = 'inline-block';
 });
 
+// Capturar imagen de la cámara
 document.getElementById('capture-image-btn').addEventListener('click', function() {
     const video = document.getElementById('camera-stream');
     const canvas = document.getElementById('image-capture-canvas');
@@ -131,24 +135,12 @@ document.getElementById('capture-image-btn').addEventListener('click', function(
     canvas.height = video.videoHeight;
     canvas.getContext('2d').drawImage(video, 0, 0);
     canvas.toBlob(function(blob) {
-        const formData = new FormData();
-        formData.append('image', blob, 'captura.jpg');
-        fetch('http://127.0.0.1:5000/procesar_imagen', {
-        method: 'POST',
-        body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Respuesta del backend: ' + data.mensaje);
-        })
-        .catch(error => {
-            alert('Error al enviar la imagen: ' + error);
-        });
+        ultimaImagenBlob = blob; // Guardar la imagen capturada
+        alert('Imagen capturada. Ahora puedes completar la consulta.');
     }, 'image/jpeg');
 });
 
-
-// Botón para cargar imagen desde el dispositivo
+// Cargar imagen desde el dispositivo
 document.getElementById('upload-image-btn').addEventListener('click', function() {
     document.getElementById('upload-image-input').click();
 });
@@ -156,8 +148,18 @@ document.getElementById('upload-image-btn').addEventListener('click', function()
 document.getElementById('upload-image-input').addEventListener('change', function(event) {
     const file = event.target.files[0];
     if (!file) return;
+    ultimaImagenBlob = file; // Guardar la imagen cargada
+    alert('Imagen cargada. Ahora puedes completar la consulta.');
+});
+
+// Completar consulta: enviar la imagen al backend
+document.querySelector('#submission-section button').addEventListener('click', function() {
+    if (!ultimaImagenBlob) {
+        alert('Primero debes capturar o cargar una imagen.');
+        return;
+    }
     const formData = new FormData();
-    formData.append('image', file, file.name);
+    formData.append('image', ultimaImagenBlob, 'consulta.jpg');
     fetch('http://127.0.0.1:5000/procesar_imagen', {
         method: 'POST',
         body: formData
@@ -170,7 +172,6 @@ document.getElementById('upload-image-input').addEventListener('change', functio
         alert('Error al enviar la imagen: ' + error);
     });
 });
-
 </script>
 </body>
 </html>
