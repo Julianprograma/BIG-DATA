@@ -56,6 +56,19 @@ def procesar_imagen_ruta(ruta):
             print(f"Texto detectado (descartado): {plate_text}")
     print("Procesamiento de imagen finalizado.")
 
+# 6. Menú principal
+def main():
+    print("Selecciona una opción:")
+    print("1. Escanear con cámara")
+    print("2. Analizar imagen desde archivo")
+    opcion = input("Opción (1/2): ").strip()
+    if opcion == "1":
+        procesar_camara()
+    elif opcion == "2":
+        procesar_imagen()
+    else:
+        print("Opción no válida.")
+
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         procesar_imagen_ruta(sys.argv[1])

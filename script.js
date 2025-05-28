@@ -103,31 +103,62 @@ function handleCompleteConsultation() {
     let plateToMonitor = null;
     let sourceOfPlate = "";
 
+    // Si hay imagen capturada, envíala al backend y muestra la placa real en consola
     if (capturedImageData) {
-        plateToMonitor = "QRS-456"; // Simulated OCR result for captured image
-        sourceOfPlate = "la imagen capturada";
-    } else if (cameraId) {
+        // Convertir dataURL a Blob
+        function dataURLtoBlob(dataurl) {
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
+        const imageBlob = dataURLtoBlob(capturedImageData);
+
+        const formData = new FormData();
+        formData.append('image', imageBlob, 'captura.jpg');
+        fetch('http://127.0.0.1:5000/procesar_imagen', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Imprime en consola la placa analizada por code_ORC.py
+            console.log("Placa analizada por code_ORC.py:", data.mensaje);
+            alert('Respuesta del backend: ' + data.mensaje);
+
+            // Opcional: Redirigir o limpiar campos después de procesar
+            stopCameraStream();
+            cameraIdInput.value = '';
+            capturedImageData = null;
+            if(imageCaptureStatus) imageCaptureStatus.style.display = 'none';
+        })
+        .catch(error => {
+            alert('Error al enviar la imagen: ' + error);
+        });
+        return; // No continuar con la simulación
+    }
+
+    // --- Simulación si no hay imagen ---
+    if (cameraId) {
         plateToMonitor = cameraPlateMap[cameraId] || cameraPlateMap["DEFAULT"];
         sourceOfPlate = `el ID de cámara '${cameraId}'`;
     }
 
     if (plateToMonitor) {
+        console.log("Placa simulada:", plateToMonitor);
         alert(`Procesando consulta con placa ${plateToMonitor} (obtenida de ${sourceOfPlate}).\nRedirigiendo a monitoreo...`);
-        
-        stopCameraStream(); // Stop camera before navigating
-        
+        stopCameraStream();
         window.location.href = `monitoring.html?plate=${encodeURIComponent(plateToMonitor)}`;
-        
-        // Clear inputs after processing
         cameraIdInput.value = '';
         capturedImageData = null;
         if(imageCaptureStatus) imageCaptureStatus.style.display = 'none';
-
     } else {
         alert("Por favor, ingrese un ID de cámara o capture una foto antes de completar la consulta.");
-        if(cameraIdInput && !capturedImageData) { // If no image, focus on ID input
+        if(cameraIdInput && !capturedImageData) {
              cameraIdInput.focus();
-        } else if (!currentStream && !capturedImageData) { // If no image and camera not started, hint to start camera
+        } else if (!currentStream && !capturedImageData) {
             if(startCameraBtn) startCameraBtn.focus();
         }
     }
